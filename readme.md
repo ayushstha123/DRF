@@ -52,5 +52,35 @@ print(get_response.text) #print raw text response
 print(get_response.json()) #print raw text response
 ```
 
+> ### Creating my first api view
+1. Create a app called as api
+```bash 
+py manage.py startapp api
+```
+
+2. write a code in views.py inside the api folder that says
+- import JsonResponse from django.http
+- create a function named as api_home with request as a parameter and return JsonResponse({"message":"Hi there"})
+
+3. now import views in urls.py insdie api folder and write 
+```bash 
+urlpatterns=[path('',views.api_home)] 
+```
+
+4. now add the url of the api folder into the main folder like This
+```bash 
+from django.contrib import admin
+from django.urls import path,include
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('api/',include('api.urls'))
+]
+
+```
+
+5. change in the client folder inside basic.py 
+print(get_response.json()['message'])
+```
 
 
