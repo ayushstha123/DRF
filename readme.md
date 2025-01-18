@@ -42,7 +42,6 @@ API stands for Application Programming Interface. It's a set of rules and protoc
 
 ```bash 
 import requests
-
 endpoints="https://httpbin.org/anything"
 
 #aplication programming interface
@@ -59,6 +58,15 @@ py manage.py startapp api
 ```
 
 2. write a code in views.py inside the api folder that says
+- request:
+The first parameter is mandatory in Django view functions and represents the HTTP request object.
+
+- *args:
+***Captures any extra positional arguments passed to the view function when it's called. In most Django cases, this is rarely used, but Django includes it for flexibility.***
+
+- **kwargs:
+***Captures any extra keyword arguments passed to the view function. These often come into play when using URL patterns with parameters.***
+
 - import JsonResponse from django.http
 - create a function named as api_home with request as a parameter and return JsonResponse({"message":"Hi there"})
 
@@ -71,16 +79,49 @@ urlpatterns=[path('',views.api_home)]
 ```bash 
 from django.contrib import admin
 from django.urls import path,include
-
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/',include('api.urls'))
 ]
-
 ```
 
-5. change in the client folder inside basic.py 
+5. change in the client folder inside basic.py
+```bash 
 print(get_response.json()['message'])
 ```
 
 
+> ### Creating Get echo 
+load() function decodes a JSON file and returns a Python object. The decoding conversion is based on the following table. The . loads() function, alternatively, takes a JSON string and returns a Python object.
+
+```bash 
+import json
+from django.shortcuts import render
+from django.http import JsonResponse
+# Create your views here.
+def api_home(request,*args,**kwargs):
+    body=request.body
+    data={}
+    try:
+        data=json.loads(body) #turns the string of json data into python dictionary
+    except:
+        pass
+    print(data)
+    return JsonResponse({"message":"hi there this is your Django api resposne made by ayush"})
+```
+
+output 
+```bash
+Django version 5.1.5, using settings 'cfeHome.settings'
+Starting development server at http://127.0.0.1:8000/
+Quit the server with CTRL-BREAK.
+{'query': 'hello ayush ji'}
+[18/Jan/2025 22:57:31] "GET /api/?123 HTTP/1.1" 200 70
+```
+
+#### Difference between python DICT and JSON
+| Dict    | JSON |
+| -------- | ------- |
+| A data structure in Python that stores key-value pairs.  | A lightweight data interchange format commonly used for data transmission.   |
+| Keys are unique and can be any immutable data type (e.g., strings, numbers, tuples). | JSON objects also store key-value pairs.     |
+| Values can be any valid Python object.    | Keys are always strings, and values can be strings, numbers, booleans, arrays (lists), or other JSON objects.    |
