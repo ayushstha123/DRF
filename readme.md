@@ -109,6 +109,11 @@ def api_home(request,*args,**kwargs):
     print(data)
     return JsonResponse({"message":"hi there this is your Django api resposne made by ayush"})
 ```
+```bash
+import requests 
+endpoints="http://127.0.0.1:8000/api/"
+get_response=requests.get(endpoints,params="123",json={"query":"hello ayush ji"})
+```
 
 output 
 ```bash
