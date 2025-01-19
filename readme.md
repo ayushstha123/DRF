@@ -94,6 +94,8 @@ print(get_response.json()['message'])
 > ### Creating Get echo 
 load() function decodes a JSON file and returns a Python object. The decoding conversion is based on the following table. The . loads() function, alternatively, takes a JSON string and returns a Python object.
 
+- api > views.py
+
 ```bash 
 import json
 from django.shortcuts import render
@@ -109,6 +111,8 @@ def api_home(request,*args,**kwargs):
     print(data)
     return JsonResponse({"message":"hi there this is your Django api resposne made by ayush"})
 ```
+
+- client > basic.py
 ```bash
 import requests 
 endpoints="http://127.0.0.1:8000/api/"
@@ -130,3 +134,51 @@ Quit the server with CTRL-BREAK.
 | A data structure in Python that stores key-value pairs.  | A lightweight data interchange format commonly used for data transmission.   |
 | Keys are unique and can be any immutable data type (e.g., strings, numbers, tuples). | JSON objects also store key-value pairs.     |
 | Values can be any valid Python object.    | Keys are always strings, and values can be strings, numbers, booleans, arrays (lists), or other JSON objects.    |
+
+
+### Django Model Instance as Api Response
+1. create a app called as products
+2. create a model in products with title,content,price 
+```bash
+from django.db import models
+
+# Create your models here.
+class Product(models.Model):
+    title=models.CharField(max_length=120)
+    content=models.TextField(blank=True,null=True)
+    price=models.DecimalField(max_digits=15, decimal_places=2,default=99.99)
+```
+
+3. adding in views.py of api
+In the code snippet, you're taking a Django model instance (Product) and formatting it as an API response using JsonResponse. 
+
+- Product.objects.all() retrieves all the product records from the database.
+- .order_by("?") randomizes the order of the records.
+- .first() fetches the first product from this randomized order.
+
+```bash 
+    #Django Model Instance as API response
+    
+    model_datas=Product.objects.all().order_by("?").first()
+    data={}
+    if model_datas:
+        data['id']=model_datas.id
+        data['title']=model_datas.title
+        data['content']=model_datas.content
+        data['price']=model_datas.price
+```
+
+### Django Model Instance to dictionary
+- now to make the model instance to dicts we need to add in the views 
+```bash 
+from django.forms.models import model_to_dict
+
+    #Django Model Instance as API response
+    model_datas=Product.objects.all().order_by("?").first()
+    data={}
+    if model_datas:
+        data=model_to_dict(model_datas,fields=['id','price'])
+    return JsonResponse(data)
+```
+
+## RESTFRAMEWORK VIEWS AND RESPONSE
