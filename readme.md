@@ -181,4 +181,73 @@ from django.forms.models import model_to_dict
     return JsonResponse(data)
 ```
 
-## RESTFRAMEWORK VIEWS AND RESPONSE
+> ## RESTFRAMEWORK 
+### VIEWS AND RESPONSE
+**DECORATORS**: A decorator is essentially a function that takes another function as input, adds some functionality to it, and then returns the modified function. Decorators are implemented using higher-order functions (functions that accept or return other functions).
+
+> Decorator: @api_view
++ The @api_view decorator is used to mark this function-based view as a DRF API view.
++ By default, it supports GET requests, but you can specify supported HTTP methods like this:
+```bash 
+@api_view(['GET', 'POST'])
+```
+
+- import response from rest_framework.response
+- import api_view from rest_framework.decorators
+
+### Django rest framework Model Serializers
+**What is a Serializer in Django Rest Framework (DRF)?**
+- In Django Rest Framework, a serializer is a tool used to convert complex data types (such as Django model instances or querysets) into JSON or other content types that can be easily rendered in an API response. Similarly, serializers can validate and deserialize incoming data (e.g., JSON) into Python objects that can be saved to a database.
+
+**Purpose of Serializers**
+- Serialization: Converts Python objects (like Django models) into formats like JSON to send as API responses.
+- Deserialization: Converts incoming data (JSON or other formats) into Python objects and validates the data.
+- Validation: Ensures the incoming data adheres to specific rules or formats before processing.
+
+**Types of Serializers in DRF**
+1. Serializer (Basic Serializer)
+This is the simplest form of a serializer where fields are explicitly defined.
+```bash
+class BasicSerializer(serializers.Serializer):
+    name = serializers.CharField(max_length=100)
+    age = serializers.IntegerField()
+```
+
+2.  ModelSerializer
+A ModelSerializer is a shortcut for creating serializers directly tied to Django models.
+It automatically generates fields based on the model.
+
+```bash 
+from rest_framework import serializers
+from .models import Product
+
+class ProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = ['id', 'title', 'price']  # Fields to include in serialization
+
+```
+.
+---
+**Why Define Methods Inside a Django Model?**
+Defining methods (like @property or other functions) inside a Django model allows us to extend the functionality of the model beyond the default behavior provided by Django. These methods can be used to compute derived values, perform custom logic, or encapsulate reusable operations related to the model
+
+***Why It's Inside the Model:***
+- The sales_price calculation is directly tied to the Product model, so keeping it in the model keeps the logic centralized and reusable.
+- It ensures that all operations related to a Product instance stay together, making the code easier to read and maintain.
+
+```bash
+from django.db import models
+
+class Product(models.Model):
+    title=models.CharField(max_length=120)
+    content=models.TextField(blank=True,null=True)
+    price=models.DecimalField(max_digits=15, decimal_places=2,default=99.99)
+
+    @property
+    def sales_price(self):
+        return "%.2f" %(float(self.price)*0.08)
+    
+    def get_discount(self):
+        return "122"
+```
