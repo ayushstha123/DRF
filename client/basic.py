@@ -11,5 +11,5 @@ get_response=requests.get(endpoints,params="123",json={"query":"hello ayush ji"}
 # print(get_response.json()['message']) #print raw text response
 
 # print (get_response.status_code) #to print out the status code
-
+get_all_response=requests.get(endpoints)
 print(get_response.json()) #print raw text response
