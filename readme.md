@@ -251,3 +251,24 @@ class Product(models.Model):
     def get_discount(self):
         return "122"
 ```
+
+***Djnago serializers rely on naming conventions such as this_discount***
+
+jaba maile discount matra haleko thiye in the custom discount field it didnt work jaba maile this_discount haleko thiey in the custom field ani maile function ko name ni change garey to get_this_discount it worked.
+
+```bash
+from rest_framework import serializers
+from .models import Product
+
+class ProductSerializers(serializers.ModelSerializer):
+    this_discount=serializers.SerializerMethodField(read_only=True)
+    class Meta:
+        model=Product
+        # fields=['title','content','price','sales_price','get_discount',] # 💀 => ,
+        fields=['title','content','price','sales_price','this_discount',] # 💀 => ,
+
+    def get_this_discount(self, obj):
+        return obj.get_discount()
+```
+
+### Ingest Data with Django RestFramework Views
