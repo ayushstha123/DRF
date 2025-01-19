@@ -236,6 +236,12 @@ Defining methods (like @property or other functions) inside a Django model allow
 - The sales_price calculation is directly tied to the Product model, so keeping it in the model keeps the logic centralized and reusable.
 - It ensures that all operations related to a Product instance stay together, making the code easier to read and maintain.
 
+**What It Does:**
+- This method computes the sales price as 8% of the product's price (price field).
+- By using the @property decorator:
+You can access the method like an attribute **(e.g., product.sales_price instead of product.sales_price()).**
+- It simplifies usage and avoids cluttering your code with method calls.
+
 ```bash
 from django.db import models
 
