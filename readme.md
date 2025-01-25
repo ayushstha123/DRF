@@ -367,3 +367,6 @@ urlpatterns = [
 **so what does int:pk do what what does it mean?**
 **Purpose**: the purpose of doing int:pk is to capture numeric value from the url like localhost:8000/api/products/1/ , so in here int:pk grabs the 1. `pk` which means primary key in databases . int is to specify the captured data should be integer and pk means that the pk parameter will be passed to the views
 
+### Create API View
+**what is Create API Viwe**
+
