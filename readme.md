@@ -278,3 +278,92 @@ class ProductSerializers(serializers.ModelSerializer):
 ```
 
 ### Ingest Data with Django RestFramework Views
+```bash 
+from rest_framework import serializers
+from .models import Product
+
+class ProductSerializers(serializers.ModelSerializer):
+    this_discount=serializers.SerializerMethodField(read_only=True)
+    class Meta:
+        model=Product
+        # fields=['title','content','price','sales_price','get_discount',] # 💀 => ,
+        fields=['title','content','price','sales_price','this_discount',] # 💀 => ,
+
+    def get_this_discount(self, obj):
+        if not hasattr(obj,'id'):  #Does the object have an ID?
+            return None
+        if not isinstance(obj,Product): #Is the object a Product?
+            return None
+        return obj.get_discount()
+```
+
+**Raise Exception**
+In Python, raise is used to trigger an exception manually. When you call raise Exception, it interrupts the normal flow of the program and raises the specified error. This can be useful for signaling that something has gone wrong and should be handled appropriately.
+
+
+**When to Use raise?**
+1. Validation: To enforce rules or constraints (e.g., invalid user input).
+2. Custom Exceptions: To provide meaningful error messages or define specific types of errors.
+3. Error Handling: To escalate issues that cannot be resolved locally.
+```bash
+# For POST
+@api_view(["POST"])
+def api_home(request,*args,**kwargs):
+    data=request.data
+    """DRF API VIEW """ #this is called docstring
+    serializer=ProductSerializers(data=request.data)
+    if serializer.is_valid(raise_exception=True):
+        
+        print(serializer.data)
+        # instance=serializer.save()
+        # print(instance)
+        return Response(serializer.data)  
+    return Response({"invalid":"not good data"})
+```
+
+### DRF Generics Retrieve APIVIEW
+***Django’s generic views... were developed as a shortcut for common usage patterns... They take certain common idioms and patterns found in view development and abstract them so that you can quickly write common views of data without having to repeat yourself.***
+
+**Using Generic Views**
+- The generic views provided by the REST framework are a convenient way to quickly build API views that map closely to your database models. They offer a range of benefits, including:
+
+- Simplified development: Generic views save you time and effort by providing pre-built views for common usage patterns.
+Improved maintainability: By reusing existing views and mixins, you can keep your code organized and easier to maintain.
+
+**List of Generic Api View**
+1. ListAPIView: For read-only endpoints to list a queryset.
+2. CreateAPIView: For create-only endpoints.
+3. RetrieveAPIView: For read-only endpoints to represent a single model instance.
+4. UpdateAPIView: For update-only endpoints for a single model instance.
+5. DestroyAPIView: For delete-only endpoints for a single model instance.
+6. ListCreateAPIView: For read-write endpoints to represent a collection of model instances.
+7. RetrieveUpdateAPIView: For read or update endpoints to represent a single model instance.
+8. RetrieveDestroyAPIView: For read or delete endpoints to represent a single model instance.
+9. RetrieveUpdateDestroyAPIView: For read-write-delete endpoints to represent a single model instance.
+
+
+1. Generics Retrieve API View
+`views.py`
+
+```bash 
+from rest_framework import generics
+from .models import Product
+from .serializers import ProductSerializers
+class ProductDetailAPIView(generics.RetrieveAPIView):
+    queryset=Product.objects.all()
+    serializer_class=ProductSerializers
+```
+
+`urls.py`
+```bash
+from django.urls import path
+from . import views
+urlpatterns = [
+    path('<int:pk>/',views.ProductDetailAPIView.as_view(),name="Product details")
+]
+
+```
+
+**so what does int:pk do what what does it mean?**
+**Purpose**: the purpose of doing int:pk is to capture numeric value from the url like localhost:8000/api/products/1/ , so in here int:pk grabs the 1. `pk` which means primary key in databases . int is to specify the captured data should be integer and pk means that the pk parameter will be passed to the views
+

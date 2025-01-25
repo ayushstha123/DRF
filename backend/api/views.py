@@ -43,12 +43,28 @@ from products.serializers import ProductSerializers
     # return HttpResponse(converted_data_to_json,headers={"content-type":"application/json"})
 
 #Rest rest framework
-@api_view(["GET","POST"])
+#For GET
+# @api_view(["GET"])
+# def api_home(request,*args,**kwargs):
+#     """DRF API VIEW """ #this is called docstring
+#     instance=Product.objects.all().order_by("?").first()
+#     data={}
+#     if instance:
+#         # data=model_to_dict(model_data,fields=['id','title','price'])
+#         data=ProductSerializers(instance).data
+#     return Response(data)
+
+# For POST
+@api_view(["POST"])
 def api_home(request,*args,**kwargs):
+    data=request.data
     """DRF API VIEW """ #this is called docstring
-    instance=Product.objects.all().order_by("?").first()
-    data={}
-    if instance:
-        # data=model_to_dict(model_data,fields=['id','title','price'])
-        data=ProductSerializers(instance).data
-    return Response(data)
+    serializer=ProductSerializers(data=request.data)
+    if serializer.is_valid(raise_exception=True):
+        
+        print(serializer.data)
+        # instance=serializer.save()
+        # print(instance)
+        return Response(serializer.data)  
+    return Response({"invalid":"not good data"})
+

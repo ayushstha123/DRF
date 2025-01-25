@@ -9,4 +9,10 @@ class ProductSerializers(serializers.ModelSerializer):
         fields=['title','content','price','sales_price','this_discount',] # 💀 => ,
 
     def get_this_discount(self, obj):
+        if not hasattr(obj,'id'):  #Does the object have an ID?
+            return None
+        if not isinstance(obj,Product): #Is the object a Product?
+            return None
         return obj.get_discount()
+
+#WRITE ABOUT SERIALIZERS 
