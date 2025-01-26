@@ -369,4 +369,83 @@ urlpatterns = [
 
 ### Create API View
 **what is Create API Viwe**
+```bash
 
+class ProductCreateAPIView(generics.CreateAPIView):
+    queryset=Product.objects.all()
+    serializer_class=ProductSerializers
+
+    def perform_create(self,serializer):
+        # serializer.save(user=self.request.user)
+        print(serializer.validated_data)
+        title=serializer.validated_data.get('title')
+        content=serializer.validated_data.get('content') or None
+        if content is None:
+            content=title
+        serializer.save(content=content)
+```
+
+
+### Making a function with APIVIEW that handles List,create,retrive like generics
+`get_object_or_404` is a shortcut to retrieve an object from the database. If the object exists, it returns the object. If the object does not exist, it raises a 404 HTTP error (not found).
+
+***Difference beween API VIEW and Generic***
+**APIView**
+- APIView is a base class provided by Django Rest Framework (DRF) for creating API views. It provides a basic implementation for handling HTTP requests and responses.
+
+**Generic Class-Based Views**
+- Generic class-based views, on the other hand, are a set of pre-built views that provide common functionality for performing CRUD (create, read, update, delete) operations on models.
+
+**Key differences:**
+- Customizability: APIView is a more customizable base class, allowing you to implement your own logic for handling HTTP requests and responses. Generic class-based views are more opinionated and provide a fixed implementation for common use cases.
+- Code reuse: Generic class-based views promote code reuse by providing a standard way to handle common operations like listing, retrieving, creating, updating, and deleting objects.
+- Complexity: Generic class-based views are often simpler to implement, as they handle the underlying logic for you. 
+However, they may not be as flexible as APIView for complex or custom use cases.
+---
+views.py
+
+`many=True` Tells the serializer to handle multiple objects(a queryset)
+`Product.objects.all()` fetches all Product objects from the db
+
+> Using API VIEW
+
+`views.py`
+```bash 
+@api_view(["GET","POST"])
+def product_alt_view(request,pk=None,*args,**kwargs):
+    method=request.method
+    if method=="GET":
+        if pk is not None:
+            #detail view
+            obj=get_object_or_404(Product,pk=pk) #yelay chai product db bata tyo specific primary key vako object lai khojcha if not found it returns a 404 not found response
+            data=ProductSerializers(obj,many=False).data
+
+            return Response(data)
+        #list view
+        queryset=Product.objects.all() # Fetch all products from the database
+        data=ProductSerializers(queryset,many=True).data # Serialize the queryset many true garnu ko karan chai dherai data awoochan yewotai db bata ani serializer lai tha hunna so it returns an error 
+        return Response(data) # Return the serialized data as an API response
+    if method=="POST":
+        serializer=ProductSerializers(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            title=serializer.validated_data.get('title')
+            content=serializer.validated_data.get('content') or None
+            if content is None:
+                content=title
+            serializer.save(content=content)
+            print(serializer.data)
+            return Response(serializer.data)
+        else:
+            return Response({"invalid":"not good data"},status=400)
+```
+
+`urls.py`
+
+```bash 
+from django.urls import path
+from . import views
+urlpatterns = [
+    path('',views.product_alt_view),
+    path('<int:pk>/',views.product_alt_view)
+]
+```
