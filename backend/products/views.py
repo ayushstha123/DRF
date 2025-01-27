@@ -1,4 +1,4 @@
-from rest_framework import generics
+from rest_framework import generics,mixins
 from rest_framework.response import Response
 
 from .models import Product
@@ -85,3 +85,50 @@ def product_alt_view(request,pk=None,*args,**kwargs):
     
             
 
+#mixins and generics api view
+
+#listModelMixin
+# class ProductMixinView(mixins.ListModelMixin,generics.GenericAPIView):
+#     queryset=Product.objects.all()
+#     serializer_class=ProductSerializers
+#     def get(self,request,*args,**kwargs):
+#         return self.list(request,*args,**kwargs)
+
+# product_mixin_view=ProductMixinView.as_view()
+
+#retirveModelMixin
+class ProductMixinView(
+    mixins.UpdateModelMixin,
+    mixins.DestroyModelMixin,
+    mixins.CreateModelMixin,
+    mixins.ListModelMixin,
+    mixins.RetrieveModelMixin,
+    generics.GenericAPIView
+    ):
+    queryset=Product.objects.all()
+    serializer_class=ProductSerializers
+    lookup_field='pk'
+
+
+    def get(self,request,*args,**kwargs):
+        print(args,kwargs)
+        pk=kwargs.get("pk")
+        if pk is not None:
+            return self.retrieve(request,*args,**kwargs)
+        return self.list(request,*args,**kwargs)
+    def post(self,request,*args,**kwargs):
+        return self.create(request,*args,**kwargs)
+    def put(self,request,*args,**kwargs):
+        pk=kwargs.get('pk')
+        if pk is not None:
+            return self.update(request,*args,**kwargs)
+        return Response({"detail": "Not found."})
+
+        
+    def destroy(self, request, *args, **kwargs):
+        pk=kwargs.get('pk')
+        if pk is not None:
+            return self.destroy(request, *args, **kwargs)
+        return Response({"detail": "Not found."})
+    
+product_mixin_view=ProductMixinView.as_view()

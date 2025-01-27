@@ -471,3 +471,32 @@ class ProductUpdateAPIView(generics.UpdateAPIView):
             instance.content=instance.title
 list_product_update_view=ProductUpdateAPIView.as_view()
 ```
+
+### Mixins and Generic API View
+> what is mixins from the ai content
+- Mixins are a programming concept used in various languages to enhance code reusability and functionality. They are classes or objects that provide specific behaviors or methods that can be incorporated into other classes without the need for traditional inheritance.
+
+- Mixins are a concept in object-oriented programming that allows you to add functionality to a class without using inheritance. Instead of creating a subclass, you can create a mixin class that contains methods and properties, and then "mix" it into other classes. This enables code reuse and modularity without the complexity of deep inheritance hierarchies.
+
+> Mixins From Docs
+The mixin classes provide the actions that are used to provide the basic view behavior. Note that the mixin classes provide action methods rather than defining the handler methods, such as `.get()` and `.post()`, directly. This allows for more flexible composition of behavior.
+
+The mixin classes can be imported from `rest_framework.mixins`.
+
+- **ListModelMixin**
+The ListModelMixin adds a .list() method to a view, which handles GET requests to list all objects in a queryset. It serializes the queryset and returns the serialized data in the response.
+- it has pagination and filteration support.
+
+```bash 
+class ProductMixinView(mixins.ListModelMixin,generics.GenericAPIView):
+
+    queryset=Product.objects.all()
+    serializer_class=ProductSerializers
+    def get(self,request,*args,**kwargs):
+        return self.list(request,*args,**kwargs)
+
+product_mixin_view=ProductMixinView.as_view()
+```
+
+**RetirveModelMixin**
+Provides a `.retrieve(request, *args, **kwargs)` method, that implements returning an existing model instance in a response.
