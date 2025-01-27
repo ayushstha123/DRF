@@ -449,3 +449,25 @@ urlpatterns = [
     path('<int:pk>/',views.product_alt_view)
 ]
 ```
+
+### UPDATE AND DESTROY API VIEW
+`delete view`
+```bash 
+class ProductDeleteAPIView(generics.DestroyAPIView):
+    queryset=Product.objects.all()
+    serializer_class=ProductSerializers
+product_delete_view=ProductDeleteAPIView.as_view()
+```
+
+`update views`
+```bash 
+class ProductUpdateAPIView(generics.UpdateAPIView):
+    queryset=Product.objects.all()
+    serializer_class=ProductSerializers
+
+    def perform_update(self,serializer):
+        instance=serializer.save()
+        if not instance.content:
+            instance.content=instance.title
+list_product_update_view=ProductUpdateAPIView.as_view()
+```
