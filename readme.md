@@ -500,3 +500,43 @@ product_mixin_view=ProductMixinView.as_view()
 
 **RetirveModelMixin**
 Provides a `.retrieve(request, *args, **kwargs)` method, that implements returning an existing model instance in a response.
+
+```bash 
+
+#retirveModelMixin
+class ProductMixinView(
+    mixins.UpdateModelMixin,
+    mixins.DestroyModelMixin,
+    mixins.CreateModelMixin,
+    mixins.ListModelMixin,
+    mixins.RetrieveModelMixin,
+    generics.GenericAPIView
+    ):
+    queryset=Product.objects.all()
+    serializer_class=ProductSerializers
+    lookup_field='pk'
+
+
+    def get(self,request,*args,**kwargs):
+        print(args,kwargs)
+        pk=kwargs.get("pk")
+        if pk is not None:
+            return self.retrieve(request,*args,**kwargs)
+        return self.list(request,*args,**kwargs)
+    def post(self,request,*args,**kwargs):
+        return self.create(request,*args,**kwargs)
+    def put(self,request,*args,**kwargs):
+        pk=kwargs.get('pk')
+        if pk is not None:
+            return self.update(request,*args,**kwargs)
+        return Response({"detail": "Not found."})
+
+        
+    def destroy(self, request, *args, **kwargs):
+        pk=kwargs.get('pk')
+        if pk is not None:
+            return self.destroy(request, *args, **kwargs)
+        return Response({"detail": "Not found."})
+    
+product_mixin_view=ProductMixinView.as_view()
+```
