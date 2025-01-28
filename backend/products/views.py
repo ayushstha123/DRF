@@ -1,4 +1,4 @@
-from rest_framework import generics,mixins
+from rest_framework import authentication,generics,mixins,permissions
 from rest_framework.response import Response
 
 from .models import Product
@@ -6,16 +6,18 @@ from .serializers import ProductSerializers
 #import decorators
 from rest_framework.decorators import api_view
 from django.shortcuts import get_object_or_404
+
 class ProductListAPIView(generics.ListCreateAPIView):
     queryset=Product.objects.all()
     serializer_class=ProductSerializers
-
 
 list_product_create_view=ProductListAPIView.as_view()
 
 class ProductCreateAPIView(generics.CreateAPIView):
     queryset=Product.objects.all()
     serializer_class=ProductSerializers
+    authentication_classes=[authentication.SessionAuthentication]
+    permission_classes=[permissions.IsAuthenticated]
 
     def perform_create(self,serializer):
         # serializer.save(user=self.request.user)
@@ -24,11 +26,9 @@ class ProductCreateAPIView(generics.CreateAPIView):
         content=serializer.validated_data.get('content') or None
         if content is None:
             content=title
-
         serializer.save(content=content)
 
         #send a signal
-
 product_create_view=ProductCreateAPIView.as_view()
 
 class ProductDetailAPIView(generics.RetrieveAPIView):

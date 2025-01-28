@@ -540,3 +540,28 @@ class ProductMixinView(
     
 product_mixin_view=ProductMixinView.as_view()
 ```
+
+### Session Authentication and Permissions
+
+***Throttling is similar to permissions, in that it determines if a request should be authorized. Throttles indicate a temporary state, and are used to control the rate of requests that clients can make to an API.***
+```bash 
+from rest_framework import generics,mixins,permissions
+
+class ProductCreateAPIView(generics.CreateAPIView):
+    queryset=Product.objects.all()
+    serializer_class=ProductSerializers
+    permission_classes=[permissions.IsAuthenticated]
+
+    def perform_create(self,serializer):
+        # serializer.save(user=self.request.user)
+        print(serializer.validated_data)
+        title=serializer.validated_data.get('title')
+        content=serializer.validated_data.get('content') or None
+        if content is None:
+            content=title
+        serializer.save(content=content)
+
+        #send a signal
+product_create_view=ProductCreateAPIView.as_view()
+
+```
