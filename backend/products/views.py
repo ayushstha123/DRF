@@ -6,18 +6,18 @@ from .serializers import ProductSerializers
 #import decorators
 from rest_framework.decorators import api_view
 from django.shortcuts import get_object_or_404
+from .permissions import IsStaffEditorPermission
 
 class ProductListAPIView(generics.ListCreateAPIView):
     queryset=Product.objects.all()
     serializer_class=ProductSerializers
-
 list_product_create_view=ProductListAPIView.as_view()
 
 class ProductCreateAPIView(generics.CreateAPIView):
     queryset=Product.objects.all()
     serializer_class=ProductSerializers
     authentication_classes=[authentication.SessionAuthentication]
-    permission_classes=[permissions.IsAuthenticated]
+    permission_classes=[IsStaffEditorPermission]
 
     def perform_create(self,serializer):
         # serializer.save(user=self.request.user)

@@ -542,14 +542,14 @@ product_mixin_view=ProductMixinView.as_view()
 ```
 
 ### Session Authentication and Permissions
-
 ***Throttling is similar to permissions, in that it determines if a request should be authorized. Throttles indicate a temporary state, and are used to control the rate of requests that clients can make to an API.***
 ```bash 
-from rest_framework import generics,mixins,permissions
+from rest_framework import authentication,generics,mixins,permissions
 
 class ProductCreateAPIView(generics.CreateAPIView):
     queryset=Product.objects.all()
     serializer_class=ProductSerializers
+    authentication_classes=[authentication.SessionAuthentication]
     permission_classes=[permissions.IsAuthenticated]
 
     def perform_create(self,serializer):
@@ -561,7 +561,77 @@ class ProductCreateAPIView(generics.CreateAPIView):
             content=title
         serializer.save(content=content)
 
-        #send a signal
 product_create_view=ProductCreateAPIView.as_view()
+```
 
+### Custom Permissions
+This code defines a custom permission class called IsStaffEditorPermission that extends Django REST Framework's (DRF) DjangoModelPermissions. The purpose of this class is to enforce custom permission logic for staff users, ensuring they have specific permissions (view, delete, change, add) for the Product model.
+
+`has_permission()` Method:
+1. This method is overridden to implement custom permission logic.
+2. It determines whether the user has permission to access the view.
+
+```bash
+from rest_framework import permissions
+
+class IsStaffEditorPermission(permissions.DjangoModelPermissions):
+    def has_permission(self, request, view):
+        # Get the current user
+        user = request.user
+
+        # Print all permissions assigned to the user (for debugging)
+        print(user.get_all_permissions())
+
+        # Check if the user is a staff member
+        if request.user.is_staff:
+            # Check if the user has specific permissions for the Product model
+            if user.has_perm("product.view_product"):  # Can view products
+                return True
+            if user.has_perm("product.delete_product"):  # Can delete products
+                return True
+            if user.has_perm("product.change_product"):  # Can change products
+                return True
+            if user.has_perm("product.add_product"):  # Can add products
+                return True
+            # If the user is staff but doesn't have any of the required permissions, deny access
+            return False
+        # If the user is not a staff member, deny access
+        return False
+```
+
+> DeepSeek Improved Code
+```bash 
+
+from rest_framework import permissions
+
+class IsStaffEditorPermission(permissions.DjangoModelPermissions):
+    def has_permission(self, request, view):
+        user = request.user
+
+        # Allow superusers to bypass permission checks
+        if user.is_superuser:
+            return True
+
+        # Check if the user is a staff member
+        if user.is_staff:
+            # Get the model from the view
+            model = view.queryset.model
+            app_label = model._meta.app_label
+            model_name = model._meta.model_name
+
+            # Check if the user has any of the required permissions
+            if user.has_perm(f"{app_label}.view_{model_name}"):  # Can view
+                return True
+            if user.has_perm(f"{app_label}.delete_{model_name}"):  # Can delete
+                return True
+            if user.has_perm(f"{app_label}.change_{model_name}"):  # Can change
+                return True
+            if user.has_perm(f"{app_label}.add_{model_name}"):  # Can add
+                return True
+
+            # If the user is staff but doesn't have any of the required permissions, deny access
+            return False
+
+        # If the user is not a staff member, deny access
+        return False
 ```
