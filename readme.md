@@ -635,3 +635,33 @@ class IsStaffEditorPermission(permissions.DjangoModelPermissions):
         # If the user is not a staff member, deny access
         return False
 ```
+
+### Token Authentication
+- first go to `settings>installed apps` add rest_framework.authtoken
+- run migrations
+- so these token should be stored as well as deleted after sometimes.
+
+1. api>urls.py from rest_framework.authtoken.views import obtain_auth_token
+inside it put obtain_auth_token in auth inside the auth urls
+
+2. WE ALSO HAVE TO PUT IN THE VIEWS.PY inside the authentication_classes put authentication.TokenAuthentication
+
+import `getpass from getpass`
+3. Create a new call in `list.py` endpoint should be "http://localhost:8000/api/auth/
+put this auth response and print it in json format`auth_response=requests.post(endpoint, json={"username":'cfe' ,'password':password})`. the authentication token will be printed
+
+- `listCreate.py`
+```bash
+import requests
+from getpass import getpass #secure password 
+
+auth_endpoint="http://localhost:8000/api/auth/"
+password=getpass()
+auth_response=requests.post(auth_endpoint,json={'username':'ayush','password':password})
+print(auth_response.json())
+```
+
+`output.py`
+```bash
+{'token': '9d676589320986cc1dec2a0940092133f81dbd3d'}
+```

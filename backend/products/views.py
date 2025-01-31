@@ -16,8 +16,11 @@ list_product_create_view=ProductListAPIView.as_view()
 class ProductCreateAPIView(generics.CreateAPIView):
     queryset=Product.objects.all()
     serializer_class=ProductSerializers
-    authentication_classes=[authentication.SessionAuthentication]
-    permission_classes=[IsStaffEditorPermission]
+    authentication_classes=[
+        authentication.SessionAuthentication,
+        authentication.TokenAuthentication
+        ]
+    permission_classes=[permissions.IsAdminUser ,IsStaffEditorPermission]
 
     def perform_create(self,serializer):
         # serializer.save(user=self.request.user)
