@@ -665,3 +665,8 @@ print(auth_response.json())
 ```bash
 {'token': '9d676589320986cc1dec2a0940092133f81dbd3d'}
 ```
+
+
+**When you include Bearer in the Authorization header, you are telling the server:**
+- The type of authentication being used is token-based.
+- The token provided is a Bearer token, meaning whoever "bears" (possesses) this token is authorized to access the resource

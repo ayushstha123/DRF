@@ -7,6 +7,8 @@ class IsStaffEditorPermission(permissions.DjangoModelPermissions):
         if request.user.is_staff:
             if user.has_perm("product.view_product"):
                 return True
+            if user.has_perm("product.view_product"):
+                return True
             if user.has_perm("product.delete_product"):
                 return True
             if user.has_perm("product.change_product"):

@@ -4,8 +4,8 @@ from . import views
 urlpatterns = [
     # path('<int:pk>/',views.ProductDetailAPIView.as_view(),name="Product details"),
 
-    # path('',views.list_product_create_view)
-    path('',views.product_create_view),
+    path('',views.list_product_create_view),
+    # path('',views.product_create_view),
 
     # @apiView
     # path('',views.product_alt_view),
